@@ -1,13 +1,21 @@
 package com.zillionfortune.realtime.bolt;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.IBasicBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
+
+import com.zillionfortune.realtime.util.HBaseCommunicator;
+import com.zillionfortune.realtime.util.HBaseConnector;
 
 public class HbaseInsertBolt implements IBasicBolt{
 
@@ -33,7 +41,7 @@ private static final long serialVersionUID = 1L;
 	/*
 	 * Constructor initializes the variables storing the hbase table information, connects to hbase and checks if the table already exists
 	 */
-	public HBaseDumperBolt(final String hbaseXmlLocation, final String tableName, final String rowKeyCheck, final ArrayList<String> colFamilyNames, final ArrayList<ArrayList<String>> colNames) {
+	public  HbaseInsertBolt(final String hbaseXmlLocation, final String tableName, final String rowKeyCheck, final ArrayList<String> colFamilyNames, final ArrayList<ArrayList<String>> colNames) {
 
 		this.tableName = tableName;
 		this.colFamilyNames = colFamilyNames;
@@ -52,6 +60,8 @@ private static final long serialVersionUID = 1L;
 		}
 	}
 
+	public void prepare(Map stormConf, TopologyContext context) {
+	}
 	/*
 	 * For every input tuple creates a list of values to be dumped as a row, depending upon the column names of the hbase table
 	 * @see backtype.storm.topology.IBasicBolt#execute(backtype.storm.tuple.Tuple, backtype.storm.topology.BasicOutputCollector)
@@ -104,6 +114,5 @@ private static final long serialVersionUID = 1L;
 		return map;
 	}
 
-	public void prepare(Map stormConf, TopologyContext context) {
-	}
+
 }
