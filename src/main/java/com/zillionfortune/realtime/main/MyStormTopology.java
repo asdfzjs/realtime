@@ -1,6 +1,8 @@
 package com.zillionfortune.realtime.main;
 
 
+
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,13 +63,14 @@ public class MyStormTopology {
           
         Config conf = new Config();
   		conf.setDebug(false);
-  		String name = MyStormTopology.class.getSimpleName();
+  	//	String name = MyStormTopology.class.getSimpleName();
   		if (args != null && args.length > 0) {
+  			conf.put(Config.NIMBUS_HOST, args[0]);
   			conf.setNumWorkers(3);
   			StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
   		} else {
   			LocalCluster cluster = new LocalCluster();
-  			cluster.submitTopology(name, conf, builder.createTopology());
+  			cluster.submitTopology("test", conf, builder.createTopology());
   			//Utils.sleep(100000);
 //  			cluster.killTopology("zjs");
 //  			cluster.shutdown();

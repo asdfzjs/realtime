@@ -1,7 +1,9 @@
 package com.zillionfortune.realtime.bolt;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.storm.task.OutputCollector;
@@ -13,7 +15,7 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
-import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -54,21 +56,8 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
         }  
     }  
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) { }
-
-
-
-	public void prepare(Map arg0, TopologyContext arg1, OutputCollector arg2) {
-		// TODO Auto-generated method stub
-	}
-
 
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
@@ -76,5 +65,12 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
 		String sentence = (String) tuple.getValue(0);  
         String out = sentence + "!";  
         collector.emit(new Values(out));
+        List<DBObject> dbList = new ArrayList<DBObject>();  
+        BasicDBObject doc1 = new BasicDBObject();  
+        doc1.put("name", sentence);  
+        dbList.add(doc1); 
+        myCollection.insert(dbList);
+          
+        
 	}
 }
