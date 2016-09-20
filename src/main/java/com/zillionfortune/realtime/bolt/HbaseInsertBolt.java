@@ -34,6 +34,7 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 	public static Configuration configuration;  
     static {  
         configuration = HBaseConfiguration.create();  
+        configuration.set("fs.defaultFS", "hdfs://node6:9000/"); 
         configuration.set("hbase.zookeeper.property.clientPort", "2181");  
         configuration.set("hbase.zookeeper.quorum", "node1,node2,node3,node4,node5");  
         configuration.set("hbase.master", "node1:6000");  
@@ -65,10 +66,10 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
 		// TODO Auto-generated method stub
-		String sentence = (String) tuple.getValue(0);  
-        String out = sentence;  
-        collector.emit(new Values(out));
-        insertData("user",new Values(out).toString());
+	//	String sentence = (String) tuple.getValue(0);  
+//        String out = sentence;  
+//        collector.emit(new Values(out));
+        insertData("user",new Values(tuple.getValue(0)).toString());
 	}
 
 	@Override

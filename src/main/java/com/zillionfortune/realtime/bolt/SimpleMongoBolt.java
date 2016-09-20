@@ -12,6 +12,7 @@ import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
@@ -57,7 +58,9 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
     }  
 
 	@Override
-	public void declareOutputFields(OutputFieldsDeclarer declarer) { }
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(new Fields("log"));
+	}
 
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {

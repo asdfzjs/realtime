@@ -18,6 +18,7 @@ import com.zillionfortune.realtime.bolt.HbaseInsertBolt;
 import com.zillionfortune.realtime.bolt.SimpleMongoBolt;
 import com.zillionfortune.realtime.bolt.TransformBolt;
 
+
 import org.apache.storm.kafka.BrokerHosts;
 import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.SpoutConfig;
@@ -47,7 +48,6 @@ public class MyStormTopology {
           String topic = "zjs";
           String zkRoot = "/storm"; // default zookeeper root configuration for storm
           String id = "word";
-         
           BrokerHosts brokerHosts = new ZkHosts(zks);
           SpoutConfig spoutConf = new SpoutConfig(brokerHosts, topic, zkRoot, id);
           spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
@@ -58,22 +58,18 @@ public class MyStormTopology {
           builder.setSpout("kafka-reader", new KafkaSpout(spoutConf), 5); 
           builder.setBolt("word-splitter", new TransformBolt(), 2).shuffleGrouping("kafka-reader");
           builder.setBolt("mongo-insert", new SimpleMongoBolt(), 2).shuffleGrouping("word-splitter");
-       //   builder.setBolt("hbase-insert", new HbaseInsertBolt()).shuffleGrouping("mongo-insert");
+          builder.setBolt("hbase-insert", new HbaseInsertBolt()).shuffleGrouping("mongo-insert");
 
           
         Config conf = new Config();
-  		conf.setDebug(false);
-  	//	String name = MyStormTopology.class.getSimpleName();
+        String name = MyStormTopology.class.getSimpleName();
   		if (args != null && args.length > 0) {
   			conf.put(Config.NIMBUS_HOST, args[0]);
   			conf.setNumWorkers(3);
   			StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
   		} else {
   			LocalCluster cluster = new LocalCluster();
-  			cluster.submitTopology("test", conf, builder.createTopology());
-  			//Utils.sleep(100000);
-//  			cluster.killTopology("zjs");
-//  			cluster.shutdown();
+  			cluster.submitTopology(name, conf, builder.createTopology());
   		}
      }
 }

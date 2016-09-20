@@ -21,15 +21,13 @@ public class TransformBolt extends BaseBasicBolt{
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
 		// TODO Auto-generated method stub
-		String sentence = (String) tuple.getValue(0);  
-        String out = sentence;  
-        collector.emit(new Values(out));
+        collector.emit(new Values(tuple.getValue(0)));
 	}
 
 	@Override
-	public void declareOutputFields(OutputFieldsDeclarer arg0) {
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		// TODO Auto-generated method stub
-		
+		declarer.declare(new Fields("log")); 
 	}
 	
 
