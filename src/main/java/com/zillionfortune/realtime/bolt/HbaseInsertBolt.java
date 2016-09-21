@@ -52,8 +52,9 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
      * @throws IOException 
      */  
     public static void insertData(String tableName,String value) throws IOException {  
-    	Put put =new Put("002".getBytes());
-		put.add("info".getBytes(), "name".getBytes(), "hahaha".getBytes());
+    	long rowkey = System.currentTimeMillis();
+    	Put put =new Put(Long.toString(rowkey).getBytes());
+		put.add("info".getBytes(), "name".getBytes(), value.getBytes());
 		htable.put(put);
     } 
       
