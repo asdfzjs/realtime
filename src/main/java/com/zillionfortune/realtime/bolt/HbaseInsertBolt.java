@@ -24,41 +24,37 @@ import org.apache.hadoop.hbase.io.*;
 
 @SuppressWarnings("deprecation")
 public class HbaseInsertBolt  extends BaseBasicBolt {
-//	static HBaseConfiguration hbaseConfig=null;  
-//    static{  
-//        Configuration config=new Configuration();  
-//        config.set("hbase.zookeeper.quorum","node1,node2,node3,node4,node5");  
-//        config.set("hbase.zookeeper.property.clientPort", "2181");  
-//        hbaseConfig=new HBaseConfiguration(config);  
-//    } 
-	public static Configuration configuration;  
+	/**
+	 * 管理hbase表
+	 */
+	private static HBaseAdmin admin;
+	
+	/**
+	 * 对表中的数据CRDU的对象
+	 */
+	private static HTable htable;
     static {  
-        configuration = HBaseConfiguration.create();  
-        configuration.set("fs.defaultFS", "hdfs://node6:9000/"); 
-        configuration.set("hbase.zookeeper.property.clientPort", "2181");  
-        configuration.set("hbase.zookeeper.quorum", "node1,node2,node3,node4,node5");  
-        configuration.set("hbase.master", "node1:6000");  
+    	Configuration config =HBaseConfiguration.create();
+		config.set("hbase.zookeeper.quorum", "node1,node2,node3,node4,node5");
+		try {
+			admin =new HBaseAdmin(config);
+			htable =new HTable(config, "user");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
     }  
     
       
     /** 
      * 插入数据 
      * @param tableName 
+     * @throws IOException 
      */  
-    public static void insertData(String tableName,String value) {  
-        System.out.println("start insert data ......");  
-        HTablePool pool = new HTablePool(configuration, 1000);  
-        HTable table = (HTable) pool.getTable(tableName);  
-        Put put = new Put(value.getBytes());// 一个PUT代表一行数据，再NEW一个PUT表示第二行数据,每行一个唯一的ROWKEY，此处rowkey为put构造方法中传入的值  
-        put.add("info".getBytes(), null, "user".getBytes());// 本行数据的第一列  
-//        put.add("column2".getBytes(), null, "bbb".getBytes());// 本行数据的第三列  
-//        put.add("column3".getBytes(), null, "ccc".getBytes());// 本行数据的第三列  
-        try {  
-            table.put(put);  
-        } catch (IOException e) {  
-            e.printStackTrace();  
-        }  
-        System.out.println("end insert data ......");  
+    public static void insertData(String tableName,String value) throws IOException {  
+    	Put put =new Put("002".getBytes());
+		put.add("info".getBytes(), "name".getBytes(), "hahaha".getBytes());
+		htable.put(put);
     } 
       
       
@@ -69,7 +65,12 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 	//	String sentence = (String) tuple.getValue(0);  
 //        String out = sentence;  
 //        collector.emit(new Values(out));
-        insertData("user",new Values(tuple.getValue(0)).toString());
+        try {
+			insertData("user",new Values(tuple.getValue(0)).toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
