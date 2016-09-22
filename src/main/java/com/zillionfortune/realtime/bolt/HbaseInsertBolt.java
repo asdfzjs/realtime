@@ -83,8 +83,9 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
     	}else{
     		rowkey.append(log.getMobile());
     	}
-    	
-        rowkey.append(log.getLogtime().replace("-", "").replace(":", "").replace(" ", ""));
+    	if(!StringUtils.isEmpty(log.getLogtime())){
+    		rowkey.append(log.getLogtime().replace("-", "").replace(":", "").replace(" ", ""));
+    	}
         rowkey.append(log.getMessageType());
         rowkey.append(r.nextInt(100));
     	Put put =new Put(rowkey.toString().getBytes());
@@ -133,6 +134,7 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
     	if(!StringUtils.isEmpty(log.getLogtime())){
     		put.add("log".getBytes(), "logtime".getBytes(), log.getLogtime().getBytes());
     	}
+    	put.add("log".getBytes(), "test".getBytes(), "2111111111".getBytes());
 		htable.put(put);
     } 
       
@@ -143,7 +145,7 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 		Ywlog ywlog = new Ywlog();
 		ywlog = (Ywlog) tuple.getValue(0);
         try {
-			insertData("user",ywlog);
+			insertData("ywlog",ywlog);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

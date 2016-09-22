@@ -1,0 +1,20 @@
+表名：ywlog
+
+rowkey: uid+datetime+messagetype   15921952463_20160922132700_1_四位随机数字
+columnfamily: log
+
+uuid     //uuid
+mobile    //手机号
+vd       //设备号
+os       //系统版本
+platform  //平台类型
+web       //浏览器版本
+vd_wh     //设备长宽
+channelCode   //渠道号
+appVd      //app版本号
+mobileType  //机型
+actionType   //点击行为编号
+messageContent   //消息内容
+messageType     //消息类型 
+ip         //ip
+logtime   //日志时间

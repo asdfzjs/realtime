@@ -25,22 +25,19 @@ public class TransformBolt extends BaseBasicBolt{
     private static Logger LOG = LoggerFactory.getLogger(TransformBolt.class);
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
-		try {
-			//过滤垃圾日志
-			String line = new String((byte[]) tuple.getValue(0), "UTF-8");
-			//过滤规则， 不是"{"开头的都不去做parse
-			if(!line.startsWith("{")){
-				//什么也不处理
-				LOG.error("Log format error[SKIPPED]:" + line);
-			}else{
-				//logParse
-				YwlogParse parse = new YwlogParse();
-				Ywlog logmodel = parse.logParse(line);
-				//发送ywlog对象
-				collector.emit(new Values(logmodel));
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		//过滤垃圾日志
+		//String line = new String((byte[]) tuple.getValue(0), "UTF-8");
+		String line = tuple.getValue(0).toString();
+		//过滤规则， 不是"{"开头的都不去做parse
+		if(!line.startsWith("{")){
+			//什么也不处理
+			LOG.error("Log format error[SKIPPED]:" + line);
+		}else{
+			//logParse
+			YwlogParse parse = new YwlogParse();
+			Ywlog logmodel = parse.logParse(line);
+			//发送ywlog对象
+			collector.emit(new Values(logmodel));
 		}
 	}
 
