@@ -184,8 +184,11 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<!-- <archive> <manifest> <mainClass>com.go117.data.realtime.RealtimeMain</mainClass> 
-						</manifest> </archive> -->
+					<archive>
+						<manifest>
+							<mainClass>com.zillionfortune.realtime.main.MyStormTopology</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
