@@ -28,6 +28,7 @@ public class TransformBolt extends BaseBasicBolt{
 		//过滤垃圾日志
 		//String line = new String((byte[]) tuple.getValue(0), "UTF-8");
 		String line = tuple.getValue(0).toString();
+		System.out.println("11111111111111111111111111111111111111111111111111"+line);
 		//过滤规则， 不是"{"开头的都不去做parse
 		if(!line.startsWith("{")){
 			//什么也不处理

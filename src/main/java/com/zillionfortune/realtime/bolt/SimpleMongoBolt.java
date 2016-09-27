@@ -59,15 +59,14 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("log"));
+		declarer.declare(new Fields("ywlog")); 
 	}
 
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
 		// TODO Auto-generated method stub
 		String sentence = (String) tuple.getValue(0);  
-        String out = sentence + "!";  
-        collector.emit(new Values(out));
+        collector.emit(new Values(sentence));
         List<DBObject> dbList = new ArrayList<DBObject>();  
         BasicDBObject doc1 = new BasicDBObject();  
         doc1.put("name", sentence);  

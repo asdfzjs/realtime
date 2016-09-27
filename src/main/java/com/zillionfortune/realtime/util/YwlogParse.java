@@ -57,7 +57,7 @@ public class YwlogParse {
 			}else{
 				ywlog.setMobile(obj2.getString("u"));
 			}
-			if(obj.get("t").equals("1")){//基础数据
+			if(obj.getString("t").equals("1")){//基础数据
 				ywlog.setVd(obj2.getString("d"));
 				ywlog.setOs(obj2.getString("o"));
 				ywlog.setPlatform(obj2.getString("p"));

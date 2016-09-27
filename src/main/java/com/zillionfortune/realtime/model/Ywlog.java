@@ -1,6 +1,12 @@
 package com.zillionfortune.realtime.model;
 
-public class Ywlog {
+import java.io.Serializable;
+
+public class Ywlog implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String uuid;//非登录用户的uuid
 	private String  mobile; //手机号码
 	private String vd;//设备号
