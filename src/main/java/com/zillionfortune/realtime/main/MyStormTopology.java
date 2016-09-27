@@ -60,9 +60,10 @@ public class MyStormTopology {
         Config conf = new Config();
         String name = MyStormTopology.class.getSimpleName();
   		if (args != null && args.length > 0) {
-  			conf.put(Config.NIMBUS_HOST, args[0]);
+  			//conf.put(Config.NIMBUS_HOST, args[0]);
+  			conf.setMaxSpoutPending(5000);
   			conf.setNumWorkers(3);
-  			StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
+  			StormSubmitter.submitTopology(name, conf, builder.createTopology());
   		} else {
   			LocalCluster cluster = new LocalCluster();
   			cluster.submitTopology(name, conf, builder.createTopology());
