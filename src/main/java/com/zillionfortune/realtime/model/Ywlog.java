@@ -22,6 +22,15 @@ public class Ywlog implements Serializable{
 	private String messageType;//消息类型
 	private String ip;//ip
 	private String logtime; //日志时间
+	private Boolean parse;//设置是否处理
+	
+	
+	public Boolean getParse() {
+		return parse;
+	}
+	public void setParse(Boolean parse) {
+		this.parse = parse;
+	}
 	public String getUuid() {
 		return uuid;
 	}

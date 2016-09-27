@@ -61,8 +61,8 @@ public class MyStormTopology {
         String name = MyStormTopology.class.getSimpleName();
   		if (args != null && args.length > 0) {
   			//conf.put(Config.NIMBUS_HOST, args[0]);
-  			conf.setMaxSpoutPending(5000);
   			conf.setNumWorkers(3);
+  			conf.setMaxSpoutPending(5000);
   			StormSubmitter.submitTopology(name, conf, builder.createTopology());
   		} else {
   			LocalCluster cluster = new LocalCluster();

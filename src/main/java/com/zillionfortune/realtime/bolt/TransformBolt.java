@@ -28,7 +28,6 @@ public class TransformBolt extends BaseBasicBolt{
 		//过滤垃圾日志
 		//String line = new String((byte[]) tuple.getValue(0), "UTF-8");
 		String line = tuple.getValue(0).toString();
-		System.out.println("11111111111111111111111111111111111111111111111111"+line);
 		//过滤规则， 不是"{"开头的都不去做parse
 		if(!line.startsWith("{")){
 			//什么也不处理
@@ -38,7 +37,9 @@ public class TransformBolt extends BaseBasicBolt{
 			YwlogParse parse = new YwlogParse();
 			Ywlog logmodel = parse.logParse(line);
 			//发送ywlog对象
-			collector.emit(new Values(logmodel));
+			if(logmodel.getParse()){
+				collector.emit(new Values(logmodel));
+			}
 		}
 	}
 

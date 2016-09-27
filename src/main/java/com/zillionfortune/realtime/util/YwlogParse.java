@@ -45,6 +45,7 @@ public class YwlogParse {
 	//parse 日志
 	public Ywlog logParse(String line){
 		Ywlog ywlog = new Ywlog();
+		ywlog.setParse(true);
 		try{
 			JSONObject obj = JSONObject.fromObject(line);
 			ywlog.setIp(obj.getString("ip"));
@@ -72,13 +73,15 @@ public class YwlogParse {
 				ywlog.setMessageContent(obj2.getString("m"));
 			}
 		}catch(net.sf.json.JSONException e){
+			ywlog.setParse(false);
 			LOG.error("log format error:[skipped]"+line);
 		}
 		return ywlog;
 	}
 	
 	public static void main(String[] args) {
-		String line = "{\"d\": {\"u\": \"15827060231\",\"d\": \"*******\",\"o\": \"iPhone OS\",\"p\": 2,\"w\": \"safari 9\",\"s\": \"411,736\",\"c\": \"wandoujia\",\"v\": \"1.0.5\",\"t\": \"iphone6 plus\"},\"t\": 1,\"ip\": \"127.0.0.1\",\"datetime\": \"2016-09-21 16:07:00\"}";
+		//String line = "{\"d\": {\"u\": \"15827060231\",\"d\": \"*******\",\"o\": \"iPhone OS\",\"p\": 2,\"w\": \"safari 9\",\"s\": \"411,736\",\"c\": \"wandoujia\",\"v\": \"1.0.5\",\"t\": \"iphone6 plus\"},\"t\": 1,\"ip\": \"127.0.0.1\",\"datetime\": \"2016-09-21 16:07:00\"}";
+		String line = "{\"d\":{\"d\":{\"p\":\"1.1.1\",\"u\":\"xxxx\",\"m\":\"App�����ɼ�\"}},\"t\":\"2\",\"datetime\":\"2016-09-27 14:45:51\",\"ip\":\"192.168.210.1\"}";
 		JSONObject obj = JSONObject.fromObject(line);
 		Ywlog ywlog = new Ywlog();
 		ywlog.setIp(obj.getString("ip"));
@@ -86,7 +89,7 @@ public class YwlogParse {
 		ywlog.setMessageType(obj.getString("t"));
 		String dcontent = obj.getString("d");
 		JSONObject obj2 = JSONObject.fromObject(dcontent);
-		if(obj2.getString("u").length()>11){//大于11位就是uuid
+		if(obj2.get("u").toString().length()>11){//大于11位就是uuid
 			ywlog.setUuid(obj2.getString("u"));
 		}else{
 			ywlog.setMobile(obj2.getString("u"));
