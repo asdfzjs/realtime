@@ -31,7 +31,7 @@ public class TransformBolt extends BaseBasicBolt{
 		//过滤规则， 不是"{"开头的都不去做parse
 		if(!line.startsWith("{")){
 			//什么也不处理
-			LOG.error("Log format error[SKIPPED]:" + line);
+			LOG.error("Log format content[SKIPPED]:" + line);
 		}else{
 			//logParse
 			YwlogParse parse = new YwlogParse();
