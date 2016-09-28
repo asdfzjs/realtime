@@ -134,7 +134,7 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
     	if(!StringUtils.isEmpty(log.getLogtime())){
     		put.add("log".getBytes(), "logtime".getBytes(), log.getLogtime().getBytes());
     	}
-    	put.add("log".getBytes(), "test".getBytes(), "2111111111".getBytes());
+    	//put.add("log".getBytes(), "test".getBytes(), "2111111111".getBytes());
 		htable.put(put);
     } 
       

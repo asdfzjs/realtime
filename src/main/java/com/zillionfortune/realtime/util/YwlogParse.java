@@ -41,7 +41,7 @@ import net.sf.json.JSONObject;
 }
 */
 public class YwlogParse {
-	private static Logger LOG = LoggerFactory.getLogger(YwlogParse.class);
+	//private static Logger LOG = LoggerFactory.getLogger(YwlogParse.class);
 	//parse 日志
 	public Ywlog logParse(String line){
 		Ywlog ywlog = new Ywlog();
@@ -74,7 +74,7 @@ public class YwlogParse {
 			}
 		}catch(net.sf.json.JSONException e){
 			ywlog.setParse(false);
-			LOG.error("log format error:[skipped]"+line);
+			System.out.println("log format error:[skipped]"+line);
 		}
 		return ywlog;
 	}
