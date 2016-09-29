@@ -1,4 +1,5 @@
 package com.zillionfortune.realtime.main;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import com.zillionfortune.realtime.bolt.HbaseInsertBolt;
 import com.zillionfortune.realtime.bolt.SimpleMongoBolt;
 import com.zillionfortune.realtime.bolt.TransformBolt;
-
 
 import org.apache.storm.kafka.BrokerHosts;
 import org.apache.storm.kafka.KafkaSpout;
@@ -39,34 +39,35 @@ import org.apache.storm.utils.Utils;
 
 public class MyStormTopology {
 
-     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
-          String zks = "node1:2181,node2:2181,node3:2181,node4:2181,node5:2181/kafka";
-          String topic = "zjs";
-          String zkRoot = "/storm"; // default zookeeper root configuration for storm
-          String id = "word";
-          BrokerHosts brokerHosts = new ZkHosts(zks);
-          SpoutConfig spoutConf = new SpoutConfig(brokerHosts, topic, zkRoot, id);
-          spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
-          //spoutConf.forceFromStart = false;
-          spoutConf.zkServers = Arrays.asList(new String[] {"node1", "node2", "node3","node4","node5"});
-          spoutConf.zkPort = 2181;
-          TopologyBuilder builder = new TopologyBuilder();
-          builder.setSpout("kafka-reader", new KafkaSpout(spoutConf), 4); 
-          builder.setBolt("mongo-insert", new SimpleMongoBolt(), 2).shuffleGrouping("kafka-reader");//关闭存mongo
-          builder.setBolt("transform", new TransformBolt(), 2).shuffleGrouping("mongo-insert");
-          builder.setBolt("hbase-insert", new HbaseInsertBolt(),2).shuffleGrouping("transform");
+	public static void main(String[] args)
+			throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
+		String zks = "node1:2181,node2:2181,node3:2181,node4:2181,node5:2181/kafka";
+		String topic = "zjs";
+		String zkRoot = "/storm"; // default zookeeper root configuration for
+									// storm
+		String id = "word";
+		BrokerHosts brokerHosts = new ZkHosts(zks);
+		SpoutConfig spoutConf = new SpoutConfig(brokerHosts, topic, zkRoot, id);
+		spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
+		// spoutConf.forceFromStart = false;
+		spoutConf.zkServers = Arrays.asList(new String[] { "node1", "node2", "node3", "node4", "node5" });
+		spoutConf.zkPort = 2181;
+		TopologyBuilder builder = new TopologyBuilder();
+		builder.setSpout("kafka-reader", new KafkaSpout(spoutConf), 4);
+		builder.setBolt("mongo-insert", new SimpleMongoBolt(), 2).shuffleGrouping("kafka-reader");// 关闭存mongo
+		builder.setBolt("transform", new TransformBolt(), 2).shuffleGrouping("mongo-insert");
+		builder.setBolt("hbase-insert", new HbaseInsertBolt(), 2).shuffleGrouping("transform");
 
-          
-        Config conf = new Config();
-        String name = MyStormTopology.class.getSimpleName();
-  		if (args != null && args.length > 0) {
-  			//conf.put(Config.NIMBUS_HOST, args[0]);
-  			conf.setNumWorkers(3);
-  			conf.setMaxSpoutPending(5000);
-  			StormSubmitter.submitTopology(name, conf, builder.createTopology());
-  		} else {
-  			LocalCluster cluster = new LocalCluster();
-  			cluster.submitTopology(name, conf, builder.createTopology());
-  		}
-     }
+		Config conf = new Config();
+		String name = MyStormTopology.class.getSimpleName();
+		if (args != null && args.length > 0) {
+			// conf.put(Config.NIMBUS_HOST, args[0]);
+			conf.setNumWorkers(3);
+			conf.setMaxSpoutPending(5000);
+			StormSubmitter.submitTopology(name, conf, builder.createTopology());
+		} else {
+			LocalCluster cluster = new LocalCluster();
+			cluster.submitTopology(name, conf, builder.createTopology());
+		}
+	}
 }
