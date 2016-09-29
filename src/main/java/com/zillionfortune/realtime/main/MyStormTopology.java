@@ -52,8 +52,8 @@ public class MyStormTopology {
           spoutConf.zkPort = 2181;
           TopologyBuilder builder = new TopologyBuilder();
           builder.setSpout("kafka-reader", new KafkaSpout(spoutConf), 4); 
-          builder.setBolt("transform", new TransformBolt(), 2).shuffleGrouping("kafka-reader");
-         // builder.setBolt("mongo-insert", new SimpleMongoBolt(), 2).shuffleGrouping("transform");//关闭存mongo
+          builder.setBolt("mongo-insert", new SimpleMongoBolt(), 2).shuffleGrouping("kafka-reader");//关闭存mongo
+          builder.setBolt("transform", new TransformBolt(), 2).shuffleGrouping("mongo-insert");
           builder.setBolt("hbase-insert", new HbaseInsertBolt(),2).shuffleGrouping("transform");
 
           

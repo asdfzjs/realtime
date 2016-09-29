@@ -65,11 +65,11 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
 		// TODO Auto-generated method stub
-		String sentence = (String) tuple.getValue(0);  
+		String sentence = tuple.getValue(0).toString();  
         collector.emit(new Values(sentence));
         List<DBObject> dbList = new ArrayList<DBObject>();  
         BasicDBObject doc1 = new BasicDBObject();  
-        doc1.put("name", sentence);  
+        doc1.put("ywlog", sentence);  
         dbList.add(doc1); 
         myCollection.insert(dbList);
           
