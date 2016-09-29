@@ -5,6 +5,7 @@ import java.sql.BatchUpdateException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
@@ -19,9 +20,12 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.storm.task.OutputCollector;
+import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
@@ -31,11 +35,14 @@ import org.apache.hadoop.hbase.io.*;
 import org.apache.hadoop.hbase.procedure2.util.StringUtils;  
 
 @SuppressWarnings("deprecation")
-public class HbaseInsertBolt  extends BaseBasicBolt {
+public class HbaseInsertBolt  extends BaseRichBolt {
 	/**
 	 * 管理hbase表
 	 */
 	private static HBaseAdmin admin;
+	
+
+    private OutputCollector collector;
 	
 	/**
 	 * 对表中的数据CRDU的对象
@@ -142,7 +149,7 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
       
     
    
-	@Override
+	/*@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
 		Ywlog ywlog = new Ywlog();
 		ywlog = (Ywlog) tuple.getValue(0);
@@ -151,7 +158,7 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer arg0) {
@@ -164,6 +171,30 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMddHHmmss");
 		String a = sdf2.format(date);
 		System.out.println(a);
+	}
+
+
+
+	@Override
+	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+		// TODO Auto-generated method stub
+		this.collector = collector;
+
+	}
+
+
+
+	@Override
+	public void execute(Tuple input) {
+		// TODO Auto-generated method stub
+		collector.ack(input);
+		Ywlog ywlog = new Ywlog();
+		ywlog = (Ywlog) tuple.getValue(0);
+        try {
+			insertData("ywlog",ywlog);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
