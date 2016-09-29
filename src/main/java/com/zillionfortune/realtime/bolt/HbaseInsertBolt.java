@@ -75,18 +75,20 @@ public class HbaseInsertBolt  extends BaseBasicBolt {
 		logtime   //日志时间
      */  
     public static void insertData(String tableName,Ywlog log) throws IOException {  
-    	//uid+datetime+messagetype   15921952463_20160922132700_1_四位随机数字
+    	//uid+datetime+messagetype   15921952463_20160922132700_1_两位随机数字
     	StringBuffer rowkey = new StringBuffer();
     	Random r = new Random();
     	if(!StringUtils.isEmpty(log.getUuid())){
-    		rowkey.append(log.getUuid());
+    		rowkey.append(log.getUuid()).append("_");
     	}else{
-    		rowkey.append(log.getMobile());
+    		rowkey.append(log.getMobile()).append("_");
     	}
     	if(!StringUtils.isEmpty(log.getLogtime())){
-    		rowkey.append(log.getLogtime().replace("-", "").replace(":", "").replace(" ", ""));
+    		rowkey.append(log.getLogtime().replace("-", "").replace(":", "").replace(" ", "")).append("_");
     	}
-        rowkey.append(log.getMessageType());
+    	if(!StringUtils.isEmpty(log.getMessageType())){
+    		rowkey.append(log.getMessageType()).append("_");
+    	}
         rowkey.append(r.nextInt(100));
     	Put put =new Put(rowkey.toString().getBytes());
     	if(!StringUtils.isEmpty(log.getUuid())){
