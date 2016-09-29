@@ -43,9 +43,8 @@ public class MyStormTopology {
 			throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
 		String zks = "node1:2181,node2:2181,node3:2181,node4:2181,node5:2181/kafka";
 		String topic = "zjs";
-		String zkRoot = "/storm"; // default zookeeper root configuration for
-									// storm
-		String id = "word";
+		String zkRoot = "/storm"; // default zookeeper root configuration for  storm
+		String id = "storm";
 		BrokerHosts brokerHosts = new ZkHosts(zks);
 		SpoutConfig spoutConf = new SpoutConfig(brokerHosts, topic, zkRoot, id);
 		spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());

@@ -1,5 +1,6 @@
 package com.zillionfortune.realtime.bolt;
 
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,14 +66,21 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
 	@Override
 	public void execute(Tuple tuple, BasicOutputCollector collector) {
 		// TODO Auto-generated method stub
-		String sentence = tuple.getValue(0).toString();  
+		String sentence = tuple.getValue(0).toString();
+		try {
+			sentence = new String(sentence.getBytes(),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         collector.emit(new Values(sentence));
         List<DBObject> dbList = new ArrayList<DBObject>();  
         BasicDBObject doc1 = new BasicDBObject();  
-        doc1.put("ywlog", sentence);  
+        doc1.put("ywlog", sentence);
+        int left = sentence.indexOf("datetime");
+        if(sentence.contains("datetime")){
+        	doc1.put("datetime", sentence.substring(left+11, left+30));
+        }
         dbList.add(doc1); 
         myCollection.insert(dbList);
-          
-        
 	}
 }
