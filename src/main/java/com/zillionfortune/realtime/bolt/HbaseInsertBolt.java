@@ -54,13 +54,52 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		try {
 			admin =new HBaseAdmin(config);
 			htable =new HTable(config, "ywlog");
+			htable.setWriteBufferSize(5 * 1024 * 1024); //5MB
+			htable.setAutoFlush(false);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
     }  
+ /**   
+    //获取陪着参数
+    Configuration config = HBaseConfiguration.create();
+    //建立连接
+    Connection connection = ConnectionFactory.createConnection(config);
+    try {
+        //连接表 获取表对象
+        Table t = connection.getTable(TableName.valueOf("testtable"));
+        BufferedMutator table = connection.getBufferedMutator(TableName.valueOf("testtable"));
+        try {
+            Put p = new Put(Bytes.toBytes("myrow-1"));
+            //p.add(); 这个地方的add 是个过期的方法然而我并不知道Cell的用法是什么
+            p.add(Bytes.toBytes("colfam1"), Bytes.toBytes("name1"), Bytes.toBytes("zhangsan1"));
+            //table.put(p);
+            List<Mutation> mutations = new ArrayList<Mutation>();
+            mutations.add(p);
+            table.mutate(mutations);
+            //如果不flush 在后面get可能是看不见的
+            table.flush();
+            // Close your table and cluster connection.
+            Get get=new Get(Bytes.toBytes("myrow-1"));
+            Result result=t.get(get);
+            for(Cell cell:result.rawCells()){
+                System.out.print("行健: "+new String(CellUtil.cloneRow(cell)));
+                System.out.print("\t列簇: "+new String(CellUtil.cloneFamily(cell)));
+                System.out.print("\t列: "+new String(CellUtil.cloneQualifier(cell)));
+                System.out.print("\t值: "+new String(CellUtil.cloneValue(cell)));
+                System.out.println("\t时间戳: "+cell.getTimestamp());
+            }
+            System.out.print(">>>>end");
+        } finally {
+            if (table != null) table.close();
+        }
+    } finally {
+        connection.close();
+    }
     
-      
+    
+    **/
     /** 
      * 插入数据 
      * @param tableName 
