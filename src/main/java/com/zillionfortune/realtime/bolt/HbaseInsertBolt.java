@@ -189,7 +189,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		// TODO Auto-generated method stub
 		collector.ack(input);
 		Ywlog ywlog = new Ywlog();
-		ywlog = (Ywlog) tuple.getValue(0);
+		ywlog = (Ywlog) input.getValue(0);
         try {
 			insertData("ywlog",ywlog);
 		} catch (IOException e) {
