@@ -1,6 +1,6 @@
 表名：ywlog
 
-rowkey: uid+datetime+messagetype   15921952463_20160922132700_1_四位随机数字
+rowkey: uid+datetime+messagetype   15921952463_20160922132700_1_两位随机数字
 columnfamily: log
 
 uuid     //uuid
