@@ -1,17 +1,10 @@
 package com.zillionfortune.realtime.bolt;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
-import com.zillionfortune.realtime.main.MyStormTopology;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.storm.task.OutputCollector;
-import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
-import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
@@ -22,6 +15,10 @@ import org.slf4j.LoggerFactory;
 
 public class TransformBolt extends BaseBasicBolt{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TransformBolt.class);
 
 
@@ -47,6 +44,8 @@ public class TransformBolt extends BaseBasicBolt{
 			//发送ywlog对象
 			if(logmodel.getParse()){
 				collector.emit(new Values(logmodel));
+			}else{//parse异常的
+				LOG.info("Log parse content[SKIPPED]:" + line);
 			}
 		}
 	}
