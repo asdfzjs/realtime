@@ -56,7 +56,7 @@ public class HbaseInsertBolt extends BaseRichBolt {
 		config.set("hbase.zookeeper.quorum", "node1,node2,node3,node4,node5");
 		try {
 			admin = new HBaseAdmin(config);
-			htable = new HTable(config, "ywlog2");
+			htable = new HTable(config, "ywlog");
 			htable.setWriteBufferSize(5 * 1024 * 1024); // 5MB
 			htable.setAutoFlush(false);
 		} catch (IOException e) {
