@@ -167,8 +167,7 @@ public class HbaseInsertBolt extends BaseRichBolt {
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
-		commitTimer.schedule(new CommitTimerTask(), 5 * 1000);
-
+		commitTimer.schedule(new CommitTimerTask(), new Date(System.currentTimeMillis() + 5 * 1000), 5 * 1000);
 	}
 
 	@Override
