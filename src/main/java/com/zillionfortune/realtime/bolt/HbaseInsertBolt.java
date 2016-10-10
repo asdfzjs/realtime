@@ -251,16 +251,23 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
 					collector.ack(logInfoTuple.get(i));
 				}
+				logInfoBatch.clear();
+				logInfoTuple.clear();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			for(int i = 0 ; i <= logInfoTuple.size(); i ++){
 				collector.fail(logInfoTuple.get(i));
+
 			}
+			logInfoBatch.clear();
+			logInfoTuple.clear();
 		} catch (InterruptedException e) {
 			for(int i = 0 ; i <= logInfoTuple.size(); i ++){
 				collector.fail(logInfoTuple.get(i));
 			}
+			logInfoBatch.clear();
+			logInfoTuple.clear();
 		}
 
 
@@ -275,17 +282,24 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 				htable.batch(logInfoBatch, result);
 				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
 					collector.ack(logInfoTuple.get(i));
+
 				}
+				logInfoBatch.clear();
+				logInfoTuple.clear();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
 					collector.fail(logInfoTuple.get(i));
 				}
+				logInfoBatch.clear();
+				logInfoTuple.clear();
 			} catch (IOException e) {
 				e.printStackTrace();
 				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
 					collector.fail(logInfoTuple.get(i));
 				}
+				logInfoBatch.clear();
+				logInfoTuple.clear();
 			}
 		}
 	}
