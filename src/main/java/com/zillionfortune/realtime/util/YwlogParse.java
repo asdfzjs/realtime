@@ -83,7 +83,6 @@ public class YwlogParse {
 		//String line = "{\"d\": {\"u\": \"15827060231\",\"d\": \"*******\",\"o\": \"iPhone OS\",\"p\": 2,\"w\": \"safari 9\",\"s\": \"411,736\",\"c\": \"wandoujia\",\"v\": \"1.0.5\",\"t\": \"iphone6 plus\"},\"t\": 1,\"ip\": \"127.0.0.1\",\"datetime\": \"2016-09-21 16:07:00\"}";
 		String line = "{\"d\":{\"d\":{\"p\":\"1.1.1\",\"u\":\"xxxx\",\"m\":\"App�����ɼ�\"}},\"t\":\"2\",\"datetime\":\"2016-09-27 14:45:51\",\"ip\":\"192.168.210.1\"}";
 		int left = line.indexOf("datetime");
-		System.out.println(line.substring(left+11, left+30));
 		//		JSONObject obj = JSONObject.fromObject(line);
 //		Ywlog ywlog = new Ywlog();
 //		ywlog.setIp(obj.getString("ip"));

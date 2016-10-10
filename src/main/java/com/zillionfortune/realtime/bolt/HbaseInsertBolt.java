@@ -2,7 +2,6 @@ package com.zillionfortune.realtime.bolt;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.BatchUpdateException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,25 +13,30 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.*;
-
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
-import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
-import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
-import org.apache.storm.tuple.Values;
 
 import com.zillionfortune.realtime.model.Ywlog;
 
 import org.apache.hadoop.hbase.io.*;
 import org.apache.hadoop.hbase.procedure2.util.StringUtils;
 import org.slf4j.LoggerFactory;
-
+import org.apache.hadoop.hbase.procedure2.util.StringUtils;
 
 @SuppressWarnings("deprecation")
 public class HbaseInsertBolt  extends BaseRichBolt {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	/**
 	 * 管理hbase表
 	 */

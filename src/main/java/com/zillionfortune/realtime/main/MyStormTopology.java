@@ -49,8 +49,8 @@ public class MyStormTopology {
 			throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
 		String zks = "node1:2181,node2:2181,node3:2181,node4:2181,node5:2181/kafka";
 		String topic = "zjs";
-		String zkRoot = "/ywlog"; // default zookeeper root configuration for  storm
-		String id = "id";
+		String zkRoot = "/storm"; // default zookeeper root configuration for  storm
+		String id = "storm";
 		BrokerHosts brokerHosts = new ZkHosts(zks);
 		SpoutConfig spoutConf = new SpoutConfig(brokerHosts, topic, zkRoot, id);
 		spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
@@ -68,7 +68,7 @@ public class MyStormTopology {
 		if (args != null && args.length > 0) {
 			// conf.put(Config.NIMBUS_HOST, args[0]);
 			LOG.info("开始执行storm日志清洗");
-			conf.setNumWorkers(6);
+			conf.setNumWorkers(3);
 			conf.setMaxSpoutPending(5000);
 			StormSubmitter.submitTopology(name, conf, builder.createTopology());
 		} else {
