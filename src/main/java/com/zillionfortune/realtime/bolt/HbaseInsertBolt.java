@@ -40,7 +40,7 @@ public class HbaseInsertBolt extends BaseRichBolt {
 
 	private List<Tuple> logInfoTuple = new ArrayList<Tuple>();
 
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TransformBolt.class);
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HbaseInsertBolt.class);
 
 	private OutputCollector collector;
 
