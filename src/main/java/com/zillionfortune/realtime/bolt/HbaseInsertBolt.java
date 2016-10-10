@@ -29,13 +29,8 @@ import org.apache.hadoop.hbase.procedure2.util.StringUtils;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("deprecation")
-public class HbaseInsertBolt  extends BaseRichBolt {
-	/**
-	 * 
-	 */
+public class HbaseInsertBolt extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
-
-
 	/**
 	 * 管理hbase表
 	 */
@@ -46,26 +41,24 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 	private List<Tuple> logInfoTuple = new ArrayList<Tuple>();
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TransformBolt.class);
-	
 
-    private OutputCollector collector;
+	private OutputCollector collector;
 
 	private MyTimer commitTimer = new MyTimer();
-	
+
 	/**
 	 * 对表中的数据CRDU的对象
 	 */
 	private static HTable htable;
-    static {  
-    	Configuration config =HBaseConfiguration.create();
+	static {
+		Configuration config = HBaseConfiguration.create();
 		config.set("hbase.zookeeper.quorum", "node1,node2,node3,node4,node5");
 		try {
-			admin =new HBaseAdmin(config);
-			htable =new HTable(config, "ywlog2");
-			htable.setWriteBufferSize(5 * 1024 * 1024); //5MB
+			admin = new HBaseAdmin(config);
+			htable = new HTable(config, "ywlog");
+			htable.setWriteBufferSize(5 * 1024 * 1024); // 5MB
 			htable.setAutoFlush(false);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
     }  
@@ -131,89 +124,84 @@ public class HbaseInsertBolt  extends BaseRichBolt {
     	//uid+datetime+messagetype   15921952463_20160922132700_1_两位随机数字
 		logInfoTuple.add(input);
 		Ywlog log = (Ywlog) input.getValue(0);
-    	StringBuffer rowkey = new StringBuffer();
+		StringBuffer rowkey = new StringBuffer();
 
-    	Random r = new Random();
-    	if(!StringUtils.isEmpty(log.getUuid())){
-    		rowkey.append(log.getUuid()).append("_");
-    	}else{
-    		rowkey.append(log.getMobile()).append("_");
-    	}
-    	if(!StringUtils.isEmpty(log.getLogtime())){
-    		rowkey.append(log.getLogtime().replace("-", "").replace(":", "").replace(" ", "")).append("_");
-    	}
-    	if(!StringUtils.isEmpty(log.getMessageType())){
-    		rowkey.append(log.getMessageType()).append("_");
-    	}
-        rowkey.append(r.nextInt(100));
-
-    	Put put =new Put(rowkey.toString().getBytes());
-    	if(!StringUtils.isEmpty(log.getUuid())){
-    		put.add("log".getBytes(), "uuid".getBytes(), log.getUuid().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getMobile())){
-    		put.add("log".getBytes(), "mobile".getBytes(), log.getMobile().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getVd())){
-    		put.add("log".getBytes(), "vd".getBytes(), log.getVd().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getOs())){
-    		put.add("log".getBytes(), "os".getBytes(), log.getOs().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getPlatform())){
-    		put.add("log".getBytes(), "platform".getBytes(), log.getPlatform().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getWeb())){
-    		put.add("log".getBytes(), "web".getBytes(), log.getWeb().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getVd_wh())){
-    		put.add("log".getBytes(), "vd_wh".getBytes(), log.getVd_wh().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getChannelCode())){
-    		put.add("log".getBytes(), "channelCode".getBytes(), log.getChannelCode().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getAppVd())){
-    		put.add("log".getBytes(), "appVd".getBytes(), log.getAppVd().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getMobileType())){
-    		put.add("log".getBytes(), "mobileType".getBytes(), log.getMobileType().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getActionType())){
-    		put.add("log".getBytes(), "actionType".getBytes(), log.getActionType().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getMessageContent())){
-    		put.add("log".getBytes(), "messageContent".getBytes(), log.getMessageContent().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getMessageType())){
-    		put.add("log".getBytes(), "messageType".getBytes(), log.getMessageType().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getIp())){
-    		put.add("log".getBytes(), "ip".getBytes(), log.getIp().getBytes());
-    	}
-    	if(!StringUtils.isEmpty(log.getLogtime())){
-    		put.add("log".getBytes(), "logtime".getBytes(), log.getLogtime().getBytes());
-    	}
-		logInfoBatch.add(put);
-    	//put.add("log".getBytes(), "test".getBytes(), "2111111111".getBytes());
-//		htable.put(put);
-    } 
-      
-    
-   
-	/*@Override
-	public void execute(Tuple tuple, BasicOutputCollector collector) {
-		Ywlog ywlog = new Ywlog();
-		ywlog = (Ywlog) tuple.getValue(0);
-        try {
-			insertData("ywlog",ywlog);
-		} catch (IOException e) {
-			e.printStackTrace();
+		Random r = new Random();
+		if (!StringUtils.isEmpty(log.getUuid())) {
+			rowkey.append(log.getUuid()).append("_");
+		} else {
+			rowkey.append(log.getMobile()).append("_");
 		}
-	}*/
+		if (!StringUtils.isEmpty(log.getLogtime())) {
+			rowkey.append(log.getLogtime().replace("-", "").replace(":", "").replace(" ", "")).append("_");
+		}
+		if (!StringUtils.isEmpty(log.getMessageType())) {
+			rowkey.append(log.getMessageType()).append("_");
+		}
+		rowkey.append(r.nextInt(100));
+
+		Put put = new Put(rowkey.toString().getBytes());
+		if (!StringUtils.isEmpty(log.getUuid())) {
+			put.add("log".getBytes(), "uuid".getBytes(), log.getUuid().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getMobile())) {
+			put.add("log".getBytes(), "mobile".getBytes(), log.getMobile().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getVd())) {
+			put.add("log".getBytes(), "vd".getBytes(), log.getVd().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getOs())) {
+			put.add("log".getBytes(), "os".getBytes(), log.getOs().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getPlatform())) {
+			put.add("log".getBytes(), "platform".getBytes(), log.getPlatform().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getWeb())) {
+			put.add("log".getBytes(), "web".getBytes(), log.getWeb().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getVd_wh())) {
+			put.add("log".getBytes(), "vd_wh".getBytes(), log.getVd_wh().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getChannelCode())) {
+			put.add("log".getBytes(), "channelCode".getBytes(), log.getChannelCode().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getAppVd())) {
+			put.add("log".getBytes(), "appVd".getBytes(), log.getAppVd().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getMobileType())) {
+			put.add("log".getBytes(), "mobileType".getBytes(), log.getMobileType().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getActionType())) {
+			put.add("log".getBytes(), "actionType".getBytes(), log.getActionType().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getMessageContent())) {
+			put.add("log".getBytes(), "messageContent".getBytes(), log.getMessageContent().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getMessageType())) {
+			put.add("log".getBytes(), "messageType".getBytes(), log.getMessageType().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getIp())) {
+			put.add("log".getBytes(), "ip".getBytes(), log.getIp().getBytes());
+		}
+		if (!StringUtils.isEmpty(log.getLogtime())) {
+			put.add("log".getBytes(), "logtime".getBytes(), log.getLogtime().getBytes());
+		}
+		logInfoBatch.add(put);
+		// put.add("log".getBytes(), "test".getBytes(),
+		// "2111111111".getBytes());
+		// htable.put(put);
+	}
+
+	/*
+	 * @Override public void execute(Tuple tuple, BasicOutputCollector
+	 * collector) { Ywlog ywlog = new Ywlog(); ywlog = (Ywlog)
+	 * tuple.getValue(0); try { insertData("ywlog",ywlog); } catch (IOException
+	 * e) { e.printStackTrace(); } }
+	 */
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer arg0) {
-		//不再往下继续传了
+		// 不再往下继续传了
 	}
 
 	public static void main(String[] args) throws ParseException {
@@ -224,29 +212,26 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		LOG.info(a);
 	}
 
-
-
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-		// TODO Auto-generated method stub
 		this.collector = collector;
-		commitTimer.schedule(new CommitTimerTask(), 5 * 1000);
-
+		commitTimer.schedule(new CommitTimerTask(), new Date(System.currentTimeMillis() + 5 * 1000), 5 * 1000);
 	}
-
-
 
 	@Override
 	public void execute(Tuple input) {
-		// TODO Auto-generated method stub
 		try {
 			insertData(input);
-		}catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			collector.fail(input);
 		}
+		if (logInfoBatch.size() == 100) {
+			commitHbaseInsert();
+		}
+	}
 
-
+	private synchronized void commitHbaseInsert() {
 		try {
 			if(logInfoBatch.size() >= 100) {
 				Object[] result = new Object[logInfoBatch.size()];
@@ -257,11 +242,11 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 				logInfoBatch.clear();
 				logInfoTuple.clear();
 			}
+			// }
 		} catch (IOException e) {
 			e.printStackTrace();
 			for(int i = 0 ; i < logInfoTuple.size(); i ++){
 				collector.fail(logInfoTuple.get(i));
-
 			}
 			logInfoBatch.clear();
 			logInfoTuple.clear();
@@ -272,7 +257,6 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 			logInfoBatch.clear();
 			logInfoTuple.clear();
 		}
-
 
 	}
 
@@ -308,7 +292,6 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 	}
 
 }
-
 
 class MyTimer extends Timer implements Serializable {
 }
