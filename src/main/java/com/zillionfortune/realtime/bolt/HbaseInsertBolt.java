@@ -27,7 +27,6 @@ import com.zillionfortune.realtime.model.Ywlog;
 import org.apache.hadoop.hbase.io.*;
 import org.apache.hadoop.hbase.procedure2.util.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.apache.hadoop.hbase.procedure2.util.StringUtils;
 
 @SuppressWarnings("deprecation")
 public class HbaseInsertBolt  extends BaseRichBolt {
@@ -42,9 +41,9 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 	 */
 	private static HBaseAdmin admin;
 
-	private static List<Row> logInfoBatch = new ArrayList<Row>();
+	private List<Row> logInfoBatch = new ArrayList<Row>();
 
-	private static List<Tuple> logInfoTuple = new ArrayList<Tuple>();
+	private List<Tuple> logInfoTuple = new ArrayList<Tuple>();
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TransformBolt.class);
 	
@@ -128,7 +127,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		ip         //ip
 		logtime   //日志时间
      */  
-    public static void insertData(Tuple input) throws IOException {
+    public void insertData(Tuple input) throws IOException {
     	//uid+datetime+messagetype   15921952463_20160922132700_1_两位随机数字
 		logInfoTuple.add(input);
 		Ywlog log = (Ywlog) input.getValue(0);
@@ -252,7 +251,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 			if(logInfoBatch.size() >= 100) {
 				Object[] result = new Object[logInfoBatch.size()];
 				htable.batch(logInfoBatch, result);
-				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+				for(int i = 0 ; i < logInfoTuple.size(); i ++){
 					collector.ack(logInfoTuple.get(i));
 				}
 				logInfoBatch.clear();
@@ -260,14 +259,14 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+			for(int i = 0 ; i < logInfoTuple.size(); i ++){
 				collector.fail(logInfoTuple.get(i));
 
 			}
 			logInfoBatch.clear();
 			logInfoTuple.clear();
 		} catch (InterruptedException e) {
-			for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+			for(int i = 0 ; i < logInfoTuple.size(); i ++){
 				collector.fail(logInfoTuple.get(i));
 			}
 			logInfoBatch.clear();
@@ -284,7 +283,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 			Object[] result = new Object[logInfoBatch.size()];
 			try {
 				htable.batch(logInfoBatch, result);
-				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+				for(int i = 0 ; i < logInfoTuple.size(); i ++){
 					collector.ack(logInfoTuple.get(i));
 
 				}
@@ -292,14 +291,14 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 				logInfoTuple.clear();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+				for(int i = 0 ; i < logInfoTuple.size(); i ++){
 					collector.fail(logInfoTuple.get(i));
 				}
 				logInfoBatch.clear();
 				logInfoTuple.clear();
 			} catch (IOException e) {
 				e.printStackTrace();
-				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+				for(int i = 0 ; i < logInfoTuple.size(); i ++){
 					collector.fail(logInfoTuple.get(i));
 				}
 				logInfoBatch.clear();
