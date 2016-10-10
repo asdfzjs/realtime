@@ -1,25 +1,20 @@
 package com.zillionfortune.realtime.bolt;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.BatchUpdateException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.HTablePool;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.*;
+
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
@@ -32,7 +27,9 @@ import org.apache.storm.tuple.Values;
 import com.zillionfortune.realtime.model.Ywlog;
 
 import org.apache.hadoop.hbase.io.*;
-import org.apache.hadoop.hbase.procedure2.util.StringUtils;  
+import org.apache.hadoop.hbase.procedure2.util.StringUtils;
+import org.slf4j.LoggerFactory;
+
 
 @SuppressWarnings("deprecation")
 public class HbaseInsertBolt  extends BaseRichBolt {
@@ -40,9 +37,17 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 	 * 管理hbase表
 	 */
 	private static HBaseAdmin admin;
+
+	private static List<Row> logInfoBatch = new ArrayList<Row>();
+
+	private static List<Tuple> logInfoTuple = new ArrayList<Tuple>();
+
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TransformBolt.class);
 	
 
     private OutputCollector collector;
+
+	private MyTimer commitTimer = new MyTimer();
 	
 	/**
 	 * 对表中的数据CRDU的对象
@@ -53,7 +58,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		config.set("hbase.zookeeper.quorum", "node1,node2,node3,node4,node5");
 		try {
 			admin =new HBaseAdmin(config);
-			htable =new HTable(config, "ywlog");
+			htable =new HTable(config, "ywlog2");
 			htable.setWriteBufferSize(5 * 1024 * 1024); //5MB
 			htable.setAutoFlush(false);
 		} catch (IOException e) {
@@ -101,8 +106,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
     
     **/
     /** 
-     * 插入数据 
-     * @param tableName 
+     * 插入数据
      * @throws IOException 
      * 	uuid     //uuid
 		mobile    //手机号
@@ -120,9 +124,12 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		ip         //ip
 		logtime   //日志时间
      */  
-    public static void insertData(String tableName,Ywlog log) throws IOException {  
+    public static void insertData(Tuple input) throws IOException {
     	//uid+datetime+messagetype   15921952463_20160922132700_1_两位随机数字
+		logInfoTuple.add(input);
+		Ywlog log = (Ywlog) input.getValue(0);
     	StringBuffer rowkey = new StringBuffer();
+
     	Random r = new Random();
     	if(!StringUtils.isEmpty(log.getUuid())){
     		rowkey.append(log.getUuid()).append("_");
@@ -136,6 +143,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
     		rowkey.append(log.getMessageType()).append("_");
     	}
         rowkey.append(r.nextInt(100));
+
     	Put put =new Put(rowkey.toString().getBytes());
     	if(!StringUtils.isEmpty(log.getUuid())){
     		put.add("log".getBytes(), "uuid".getBytes(), log.getUuid().getBytes());
@@ -182,8 +190,9 @@ public class HbaseInsertBolt  extends BaseRichBolt {
     	if(!StringUtils.isEmpty(log.getLogtime())){
     		put.add("log".getBytes(), "logtime".getBytes(), log.getLogtime().getBytes());
     	}
+		logInfoBatch.add(put);
     	//put.add("log".getBytes(), "test".getBytes(), "2111111111".getBytes());
-		htable.put(put);
+//		htable.put(put);
     } 
       
     
@@ -209,7 +218,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 		Date date = sdf.parse("2008-08-08 12:10:12");
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMddHHmmss");
 		String a = sdf2.format(date);
-		System.out.println(a);
+		LOG.info(a);
 	}
 
 
@@ -218,6 +227,7 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		// TODO Auto-generated method stub
 		this.collector = collector;
+		commitTimer.schedule(new CommitTimerTask(), 5 * 1000);
 
 	}
 
@@ -226,14 +236,62 @@ public class HbaseInsertBolt  extends BaseRichBolt {
 	@Override
 	public void execute(Tuple input) {
 		// TODO Auto-generated method stub
-		collector.ack(input);
-		Ywlog ywlog = new Ywlog();
-		ywlog = (Ywlog) input.getValue(0);
-        try {
-			insertData("ywlog",ywlog);
+		try {
+			insertData(input);
+		}catch (IOException e) {
+			e.printStackTrace();
+			collector.fail(input);
+		}
+
+
+		try {
+			if(logInfoBatch.size() >= 100) {
+				Object[] result = new Object[logInfoBatch.size()];
+				htable.batch(logInfoBatch, result);
+				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+					collector.ack(logInfoTuple.get(i));
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+				collector.fail(logInfoTuple.get(i));
+			}
+		} catch (InterruptedException e) {
+			for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+				collector.fail(logInfoTuple.get(i));
+			}
+		}
+
+
+	}
+
+	private class CommitTimerTask extends TimerTask implements Serializable {
+
+		public void run() {
+			LOG.info("Commit rows because auto interval commit task. Row count committing : " + logInfoBatch.size());
+			Object[] result = new Object[logInfoBatch.size()];
+			try {
+				htable.batch(logInfoBatch, result);
+				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+					collector.ack(logInfoTuple.get(i));
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+					collector.fail(logInfoTuple.get(i));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				for(int i = 0 ; i <= logInfoTuple.size(); i ++){
+					collector.fail(logInfoTuple.get(i));
+				}
+			}
 		}
 	}
 
+}
+
+
+class MyTimer extends Timer implements Serializable {
 }

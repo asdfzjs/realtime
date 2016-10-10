@@ -37,7 +37,13 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
 
+import org.slf4j.Logger;
+
+import org.slf4j.LoggerFactory;
+
 public class MyStormTopology {
+
+	private static final Logger LOG = LoggerFactory.getLogger(MyStormTopology.class);
 
 	public static void main(String[] args)
 			throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
@@ -61,6 +67,7 @@ public class MyStormTopology {
 		String name = MyStormTopology.class.getSimpleName();
 		if (args != null && args.length > 0) {
 			// conf.put(Config.NIMBUS_HOST, args[0]);
+			LOG.info("开始执行storm日志清洗");
 			conf.setNumWorkers(6);
 			conf.setMaxSpoutPending(5000);
 			StormSubmitter.submitTopology(name, conf, builder.createTopology());

@@ -23,6 +23,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple implementation of {@link MongoBolt} which attempts to map the input
@@ -32,10 +33,13 @@ import com.mongodb.MongoException;
  *
  */
 public class SimpleMongoBolt extends BaseBasicBolt  {
-	private static final String HOST = "192.168.210.66";  
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SimpleMongoBolt.class);
+
+
+    private static final String HOST = "192.168.210.66";
     private static final int PORT = 27017;  
     private static final String DB_NAME = "zjs";  
-    private static final String COLLECTION = "zjs";  
+    private static final String COLLECTION = "zjs2";
     // private static final String USER = "iwtxokhtd";  
     // private static final String PASSWORD = "123456";  
     private static Mongo conn=null;  
