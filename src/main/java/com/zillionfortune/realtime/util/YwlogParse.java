@@ -91,6 +91,13 @@ public class YwlogParse {
 				if(obj2.has("m")){
 					ywlog.setMessageContent(obj2.getString("m"));
 				}
+			}else if(obj.getString("t").equals("3")){
+				if(obj2.has("p")){
+					ywlog.setPlatform(obj2.getString("p"));
+				}
+				if(obj2.has("m")){
+					ywlog.setMessageContent(obj2.getString("m"));
+				}
 			}
 		}catch(net.sf.json.JSONException e){
 			ywlog.setParse(false);
