@@ -39,6 +39,18 @@ import net.sf.json.JSONObject;
     "ip": "127.0.0.1",
     "datetime": "2016-09-21 16:07:00"
 }
+
+存留事件：
+{
+    "d": {
+        "p": "1.2.x",
+        "u": "15827060231",
+        "m": "微信分享失败"
+    },
+    "t": 3,
+    "ip": "127.0.0.1",
+    "datetime": "2016-09-21 16:07:00"
+}
 */
 public class YwlogParse {
 	//private static Logger LOG = LoggerFactory.getLogger(YwlogParse.class);
@@ -93,7 +105,7 @@ public class YwlogParse {
 				}
 			}else if(obj.getString("t").equals("3")){
 				if(obj2.has("p")){
-					ywlog.setPlatform(obj2.getString("p"));
+					ywlog.setActionType(obj2.getString("p"));
 				}
 				if(obj2.has("m")){
 					ywlog.setMessageContent(obj2.getString("m"));
