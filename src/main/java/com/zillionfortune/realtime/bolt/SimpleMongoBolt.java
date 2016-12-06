@@ -36,7 +36,7 @@ public class SimpleMongoBolt extends BaseBasicBolt  {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SimpleMongoBolt.class);
 
 
-    private static final String HOST = "192.168.210.66";
+    private static final String HOST = "ip";
     private static final int PORT = 27017;  
     private static final String DB_NAME = "zjs";  
     private static final String COLLECTION = "zjs";
